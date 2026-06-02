@@ -1,0 +1,21 @@
+# SATTY — VST3 / AU / Standalone
+
+A stereo audio saturator plugin written in C++ with JUCE. Inspired by the
+Fatness/Color interaction of **Sausage Fattener** and the "always-on"
+character-adding feel of saturators like **OTT**
+
+## Features
+
+- **6 saturation modes:** Fatness (default blended algorithm), Soft (tanh),
+  Tube (asymmetric, even harmonics), Tape (rational curve, gentle),
+  Diode (aggressive), Hard Clip.
+- **Fatness knob:** drives the saturator from unity up to ~12x gain into the curve.
+- **Color knob:** tilts the pre-saturation EQ (dark ↔ bright) and, in Fatness
+  mode, crossfades between tape-style (warm, even harmonics) and tanh-style
+  (clean, odd harmonics) saturation.
+- **4x IIR oversampling** to keep aliasing under control when the signal is crushed.
+- **DC blocker** on the output (the asymmetric modes can introduce DC).
+- **Smoothed parameters** — no zipper noise when automating.
+- **Dry/Wet mix**, input gain, output gain.
+- **State save/restore** via `AudioProcessorValueTreeState` — presets and
+  automation work out of the box.

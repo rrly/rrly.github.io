@@ -1,0 +1,19 @@
+# Match3r
+
+A roguelike match-3 adventure game. Match tiles to attack enemies, descend through floors, level up your hero, and unlock new classes through persistent progression.
+
+## How to play
+
+- **Match tiles** (3+ in a row/column) by clicking two adjacent tiles to swap them.
+- **Tile types:** ⚔️ attack, 🛡️ defense, 🔮 magic, ❤️ heal, 💰 gold, 📦 box, 🎫 ticket, 💣 bomb.
+- **Bombs** detonate on a single click.
+- Clear the enemy on each floor to advance. Every 5th floor is a boss.
+- On level up, choose 1 of 3 upgrades (4 rarity tiers: common/uncommon/rare/epic).
+- **Tickets** are earned by matching 🎫 tiles and persist across runs. Spend them (plus meeting stat requirements) to unlock new classes.
+
+## Game structure
+
+- **25 classes** — 3 unlocked by default (Knight, Mage, Banker), 22 unlockable.
+- **84 upgrades** across 4 rarity tiers.
+- **Persistent progression** — tickets, class unlocks, and full play history saved to `localStorage` under the key `dungeonMatchProgression`.
+- **Save files** — export/import all progression + history as a JSON file via the Options menu.
