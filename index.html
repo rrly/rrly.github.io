@@ -28,6 +28,7 @@
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        [hidden] { display: none !important; }
         html { scroll-behavior: smooth; }
 
         @keyframes page-in {
@@ -739,13 +740,112 @@
         }
         .c-val { font-size: 0.8rem; font-weight: 300; color: var(--ink); }
 
+        /* ─── PROJECTS MODULE ────────────────────── */
+        .proj-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--bd);
+            margin-bottom: 2rem;
+        }
+
+        .proj-tab {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.18em;
+            color: var(--ink4);
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 0.65rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.18s;
+            margin-bottom: -1px;
+        }
+        .proj-tab:hover { color: var(--ink2); background: rgba(255,255,255,0.22); }
+        .proj-tab.proj-tab-active {
+            color: var(--ink);
+            border-bottom-color: var(--blue2);
+            background: rgba(255,255,255,0.18);
+        }
+
+        /* wrapper stacks all panels in the same grid cell so height is always the tallest */
+        .proj-panels-wrap {
+            display: grid;
+            grid-template-areas: "panel";
+        }
+
+        .proj-panel {
+            grid-area: panel;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            align-items: start;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .proj-panel.proj-panel-visible {
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .proj-img-wrap { position: sticky; top: 0; }
+
+        .proj-img {
+            width: 100%;
+            display: block;
+            border: 1px solid var(--bd);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .proj-title {
+            font-size: 1.9rem;
+            font-weight: 300;
+            letter-spacing: -0.01em;
+            color: var(--ink);
+            margin-bottom: 0.28rem;
+        }
+
+        .proj-subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.54rem;
+            letter-spacing: 0.14em;
+            color: var(--blue2);
+            margin-bottom: 1rem;
+        }
+        .proj-subtitle::before { content: '·· '; color: var(--blue); }
+
+        .proj-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 1.5rem; }
+
+        .proj-desc {
+            font-size: 0.8rem;
+            font-weight: 300;
+            line-height: 1.9;
+            color: var(--ink3);
+        }
+        .proj-desc p { margin-bottom: 0.85rem; }
+        .proj-desc strong { color: var(--ink); font-weight: 500; }
+
+        .proj-feat-list { list-style: none; margin-top: 0.5rem; }
+        .proj-feat-list li {
+            font-size: 0.78rem;
+            font-weight: 300;
+            line-height: 1.85;
+            color: var(--ink3);
+            padding-left: 1rem;
+            position: relative;
+            margin-bottom: 0.2rem;
+        }
+        .proj-feat-list li::before { content: '·'; position: absolute; left: 0; color: var(--blue3); }
+        .proj-feat-list li strong { color: var(--ink); font-weight: 500; }
+
         /* ─── RESPONSIVE ──────────────────────────── */
         @media (max-width: 820px) {
             nav { padding: 1rem 1.5rem; }
             #hero { padding-left: 1.5rem; padding-right: 1.5rem; }
             .mod-body { padding: 1.75rem 1.25rem 2rem; }
-            .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .about-grid, .contact-grid, .proj-panel { grid-template-columns: 1fr; gap: 1.5rem; }
             .skill-grid { grid-template-columns: 1fr 1fr; }
+            .proj-img-wrap { position: static; }
             .ch-tr, .ch-bl, .ch-br, .hero-vdata { display: none; }
         }
 
@@ -763,6 +863,7 @@
     <a class="nav-logo" data-module="about">RL</a>
     <ul class="nav-links">
         <li><button class="nav-btn" data-module="about">about</button></li>
+        <li><button class="nav-btn" data-module="projects">projects</button></li>
         <li><button class="nav-btn" data-module="skills">skills</button></li>
         <li><button class="nav-btn" data-module="experience">experience</button></li>
         <li><button class="nav-btn" data-module="contact">contact</button></li>
@@ -845,8 +946,8 @@
         </p>
 
         <div class="hero-cta">
-            <button class="btn btn-fill" data-module="experience">view work</button>
-            <button class="btn btn-ghost" data-module="contact">get in touch</button>
+            <button class="btn btn-fill" data-module="experience">experience</button>
+            <button class="btn btn-ghost" data-module="contact">contact</button>
         </div>
     </div>
 
@@ -877,9 +978,9 @@
     <div class="about-grid">
         <div class="about-text">
             <p>I'm a <strong>fullstack software engineer</strong> based in the Bay Area with 7+ years working on production web apps and backend systems. Most recently at HCL BigFix, where I spent five years shipping features for enterprise endpoint management used by large organizations worldwide.</p>
-            <p>Day to day I work across the stack: <strong>React and Node</strong> on the front end, <strong>Ruby on Rails</strong> and REST APIs in the back, containers and CI/CD pipelines keeping everything moving. I tend to own things end to end rather than hand off at the edges.</p>
+            <p>Day to day I work across the stack: <strong>React/Angular/JS/TS</strong> on the front end, <strong>Node/Python</strong> and REST APIs in the back, containers and CI/CD pipelines keeping everything moving. I tend to own things end to end rather than hand off at the edges.</p>
             <p>Over the past couple years I've been building with LLMs pretty heavily. OpenAI, Claude, Gemini, Llama. Less hype, more wiring them into real workflows where they actually save time.</p>
-            <p>Computer Engineering from Cal Poly SLO. I grew up in the Bay Area and still here. Outside of work I'm usually tinkering on something, whether or not it ships.</p>
+            <p>I Studied Computer Engineering at Cal Poly San Luis Obispo. Bay Area native and still here. Outside of work I'm usually tinkering on something, whether or not it ships.</p>
         </div>
         <div class="stats">
             <div class="stat"><div class="stat-n">7+</div><div class="stat-l">years experience</div></div>
@@ -891,7 +992,7 @@
 </template>
 
 <template id="tpl-skills">
-    <div class="sec-eyebrow">002 — arsenal</div>
+    <div class="sec-eyebrow">003 — arsenal</div>
     <h2 class="sec-title">tech <span class="ac">stack</span></h2>
     <div class="skill-grid">
         <div class="skill-card">
@@ -952,7 +1053,7 @@
 </template>
 
 <template id="tpl-experience">
-    <div class="sec-eyebrow">003 — experience</div>
+    <div class="sec-eyebrow">004 — experience</div>
     <h2 class="sec-title">work <span class="ac">history</span></h2>
     <div class="timeline">
         <div class="tl-item">
@@ -992,8 +1093,75 @@
     </div>
 </template>
 
+<template id="tpl-projects">
+    <div class="sec-eyebrow">002 — projects</div>
+    <h2 class="sec-title">personal <span class="ac">builds</span></h2>
+    <div class="proj-tabs">
+        <button class="proj-tab proj-tab-active" data-project="satty">[ satty ]</button>
+        <button class="proj-tab" data-project="match3r">[ match3r ]</button>
+    </div>
+
+    <div class="proj-panels-wrap">
+    <div class="proj-panel proj-panel-visible" data-project-panel="satty">
+        <div class="proj-img-wrap">
+            <img class="proj-img" src="projects/SATTY/SATTY_screenshot.JPG" alt="SATTY audio plugin screenshot">
+        </div>
+        <div class="proj-info">
+            <div class="proj-title">SATTY</div>
+            <div class="proj-subtitle">VST3 · AU · Standalone Audio Plugin</div>
+            <div class="proj-tags">
+                <span class="tag">C++</span>
+                <span class="tag">JUCE</span>
+                <span class="tag">DSP</span>
+                <span class="tag">VST3 / AU</span>
+                <span class="tag">Audio Plugin</span>
+            </div>
+            <div class="proj-desc">
+                <p>A stereo audio saturator plugin built in C++ with the JUCE framework. Inspired by the Fatness/Color interaction of Sausage Fattener and the always-on character of saturators like OTT.</p>
+                <ul class="proj-feat-list">
+                    <li><strong>6 saturation modes:</strong> Fatness (blended), Soft (tanh), Tube (asymmetric even harmonics), Tape (rational curve), Diode (aggressive), Hard Clip</li>
+                    <li><strong>Fatness knob</strong> drives the saturator from unity up to ~12x gain into the curve</li>
+                    <li><strong>Color knob</strong> tilts the pre-saturation EQ (dark to bright) and in Fatness mode crossfades between tape-style warm and tanh-style clean saturation</li>
+                    <li><strong>4x IIR oversampling</strong> to control aliasing when the signal gets crushed</li>
+                    <li>DC blocker on output, smoothed parameters (no zipper noise), dry/wet mix, input and output gain</li>
+                    <li>State save/restore via AudioProcessorValueTreeState — presets and DAW automation work out of the box</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="proj-panel" data-project-panel="match3r">
+        <div class="proj-img-wrap">
+            <img class="proj-img" src="projects/Match3r/match3r.gif" alt="Match3r gameplay">
+        </div>
+        <div class="proj-info">
+            <div class="proj-title">Match3r</div>
+            <div class="proj-subtitle">Roguelike Match-3 Adventure Game</div>
+            <div class="proj-tags">
+                <span class="tag">JavaScript</span>
+                <span class="tag">HTML5</span>
+                <span class="tag">CSS3</span>
+                <span class="tag">Game Dev</span>
+                <span class="tag">Roguelike</span>
+            </div>
+            <div class="proj-desc">
+                <p>A roguelike match-3 adventure game. Match tiles to attack enemies, descend through floors, level up your hero, and unlock new classes through persistent progression.</p>
+                <ul class="proj-feat-list">
+                    <li>Match 3+ tiles in a row or column by swapping adjacent tiles. Tile types: attack, defense, magic, heal, gold, box, ticket, bomb</li>
+                    <li>Clear the enemy on each floor to advance. Every 5th floor is a boss fight</li>
+                    <li>On level up, choose 1 of 3 upgrades across 4 rarity tiers: common, uncommon, rare, epic</li>
+                    <li><strong>25 classes</strong> with 3 unlocked by default (Knight, Mage, Banker) and 22 unlockable via tickets and stat requirements</li>
+                    <li><strong>84 upgrades</strong> across all rarity tiers</li>
+                    <li>Persistent progression stored in localStorage. Export or import all data as a JSON save file via the Options menu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div><!-- /.proj-panels-wrap -->
+</template>
+
 <template id="tpl-contact">
-    <div class="sec-eyebrow">004 — contact</div>
+    <div class="sec-eyebrow">005 — contact</div>
     <h2 class="sec-title">let's connect and <span class="ac">build.</span></h2>
     <div class="contact-grid">
         <div>
@@ -1028,9 +1196,10 @@
 
     const titles = {
         about:      '001 — about',
-        skills:     '002 — skills',
-        experience: '003 — experience',
-        contact:    '004 — contact'
+        projects:   '002 — projects',
+        skills:     '003 — skills',
+        experience: '004 — experience',
+        contact:    '005 — contact'
     };
 
     let currentModule = null;
@@ -1068,6 +1237,19 @@
     overlay.addEventListener('click', e => { if (e.target === overlay) closeModule(); });
     closeBtn.addEventListener('click', closeModule);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && currentModule) closeModule(); });
+
+    /* inner project tab switching (delegated — content injected dynamically) */
+    modBody.addEventListener('click', e => {
+        const btn = e.target.closest('[data-project]');
+        if (!btn) return;
+        const name = btn.dataset.project;
+        modBody.querySelectorAll('.proj-panel').forEach(p => {
+            p.classList.toggle('proj-panel-visible', p.dataset.projectPanel === name);
+        });
+        modBody.querySelectorAll('[data-project]').forEach(b => {
+            b.classList.toggle('proj-tab-active', b.dataset.project === name);
+        });
+    });
 
     /* ── Bouncing pixel squares ─────────────────────── */
     (function () {
