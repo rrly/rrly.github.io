@@ -376,7 +376,7 @@ nav {
     border: 1px solid rgba(7,21,32,0.18);
     transform: translateY(14px);
     transition: transform 0.26s;
-	animation: grid-drift-module 4s linear infinite;
+    animation: grid-drift-module 4s linear infinite;
 }
 
 .mod-overlay.open .mod-panel {
@@ -851,8 +851,7 @@ nav {
     fill: none;
     stroke: rgba(12,64,100,0.50);
     stroke-width: 0.4;
-    transform-box: fill-box;
-    transform-origin: center;
+    transform-origin: 100px 100px;
     animation: radar-pulse 11s ease-out infinite;
 }
 
