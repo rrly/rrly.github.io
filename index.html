@@ -46,6 +46,10 @@
         <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(240,100,100)"/>
         <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(300,100,100)"/>
         <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(330,100,100)"/>
+        <!-- Radar pulse rings -->
+        <circle class="radar-pulse" cx="100" cy="100" r="94"/>
+        <circle class="radar-pulse" cx="100" cy="100" r="94" style="animation-delay:-3s"/>
+        <circle class="radar-pulse" cx="100" cy="100" r="94" style="animation-delay:-6s"/>
         <!-- Hands (initial 12 o'clock; JS rotates them) -->
         <line id="clock-hour" x1="100" y1="100" x2="100" y2="58" stroke="rgba(7,21,32,0.60)" stroke-width="1.5" stroke-linecap="square"/>
         <line id="clock-min"  x1="100" y1="100" x2="100" y2="36" stroke="rgba(7,21,32,0.45)" stroke-width="1"   stroke-linecap="square"/>
@@ -479,6 +483,72 @@
 
         updateClock();
         setInterval(updateClock, 50);
+    })();
+
+    /* ── Text scramble on hover ─────────────────────── */
+    (function () {
+        const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·://[]';
+        function scramble(el) {
+            if (el._scram) return;
+            const orig = el.dataset.orig || el.textContent.trim();
+            el.dataset.orig = orig;
+            el.style.minWidth = el.offsetWidth + 'px';
+            el._scram = true;
+            let f = 0, total = 16;
+            el._scramId = setInterval(() => {
+                el.textContent = orig.split('').map((ch, i) => {
+                    if (ch === ' ') return ' ';
+                    return f / total > i / orig.length ? ch : CHARS[Math.floor(Math.random() * CHARS.length)];
+                }).join('');
+                if (++f > total) {
+                    el.textContent = orig;
+                    el._scram = false;
+                    el.style.minWidth = '';
+                    clearInterval(el._scramId);
+                }
+            }, 28);
+        }
+        function unscramble(el) {
+            clearInterval(el._scramId);
+            el._scram = false;
+            el.style.minWidth = '';
+            if (el.dataset.orig) el.textContent = el.dataset.orig;
+        }
+        document.querySelectorAll('.nav-btn, .btn-ghost').forEach(el => {
+            el.addEventListener('mouseenter', () => scramble(el));
+            el.addEventListener('mouseleave', () => unscramble(el));
+        });
+    })();
+
+    /* ── Floating coordinate labels ─────────────────── */
+    (function () {
+        const hero = document.getElementById('hero');
+        const pool = [
+            '+37.6879 / -122.157', 'SYS: READY', '[ SIGNAL: OK ]',
+            'NODE_01', 'LAT: 37.6879', 'LNG: -122.157',
+            '·· ACTIVE ··', 'FREQ: 94.1', 'PKT: 0xFF',
+            '[ TX: ON ]', 'SYNC: OK', '[ RX: STANDBY ]',
+            'BAY AREA · CA', '[ DATA ]', 'UPTIME: OK'
+        ];
+        function spawn() {
+            const el = document.createElement('div');
+            el.className = 'float-label';
+            el.textContent = pool[Math.floor(Math.random() * pool.length)];
+            el.style.left = (4 + Math.random() * 88) + '%';
+            el.style.top  = (15 + Math.random() * 68) + '%';
+            hero.appendChild(el);
+            const dur = 4000 + Math.random() * 2500;
+            el.animate([
+                { opacity: 0,    transform: 'translateY(0px)'   },
+                { opacity: 0.55, transform: 'translateY(-12px)', offset: 0.18 },
+                { opacity: 0.55, transform: 'translateY(-45px)', offset: 0.78 },
+                { opacity: 0,    transform: 'translateY(-64px)' }
+            ], { duration: dur, easing: 'linear' }).onfinish = () => el.remove();
+            setTimeout(spawn, 1400 + Math.random() * 1600);
+        }
+        setTimeout(spawn, 800);
+        setTimeout(spawn, 1500);
+        setTimeout(spawn, 2200);
     })();
 </script>
 <!-- contact trap - not for human use -->
