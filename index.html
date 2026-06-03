@@ -540,8 +540,8 @@
             const dur = 4000 + Math.random() * 2500;
             el.animate([
                 { opacity: 0,    transform: 'translateY(0px)'   },
-                { opacity: 0.55, transform: 'translateY(-12px)', offset: 0.18 },
-                { opacity: 0.55, transform: 'translateY(-45px)', offset: 0.78 },
+                { opacity: 0.22, transform: 'translateY(-12px)', offset: 0.18 },
+                { opacity: 0.22, transform: 'translateY(-45px)', offset: 0.78 },
                 { opacity: 0,    transform: 'translateY(-64px)' }
             ], { duration: dur, easing: 'linear' }).onfinish = () => el.remove();
             setTimeout(spawn, 1400 + Math.random() * 1600);
