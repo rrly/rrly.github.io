@@ -861,7 +861,7 @@ nav {
     font-family: 'Space Mono', monospace;
     font-size: 0.5rem;
     letter-spacing: 0.1em;
-    color: var(--ink2);
+    color: var(--ink4);
     opacity: 0;
     pointer-events: none;
     z-index: 3;
