@@ -840,6 +840,8 @@ nav {
 }
 .proj-feat-list li::before { content: '·'; position: absolute; left: 0; color: var(--blue3); }
 .proj-feat-list li strong { color: var(--ink); font-weight: 500; }
+.proj-demo-link { color: var(--blue); font-family: 'Space Mono', monospace; font-size: 0.7em; letter-spacing: 0.1em; text-decoration: none; border-bottom: 1px solid var(--bd); transition: color 0.18s, border-color 0.18s; }
+.proj-demo-link:hover { color: var(--blue2); border-color: var(--blue2); }
 
 /* ─── RADAR PULSE ─────────────────────────── */
 @keyframes radar-pulse {

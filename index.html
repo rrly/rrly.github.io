@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noarchive, noimageindex">
-    <title>Ritchie Ly — Software Engineer</title>
+    <title>Ritchie Ly, Software Engineer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -256,6 +256,7 @@
     <div class="proj-tabs">
         <button class="proj-tab proj-tab-active" data-project="satty">[ satty ]</button>
         <button class="proj-tab" data-project="match3r">[ match3r ]</button>
+        <button class="proj-tab" data-project="prism">[ prism ]</button>
     </div>
 
     <div class="proj-panels-wrap">
@@ -310,6 +311,34 @@
                     <li><strong>25 classes</strong> with 3 unlocked by default (Knight, Mage, Banker) and 22 unlockable via tickets and stat requirements</li>
                     <li><strong>84 upgrades</strong> across all rarity tiers</li>
                     <li>Persistent progression stored in localStorage. Export or import all data as a JSON save file via the Options menu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="proj-panel" data-project-panel="prism">
+        <div class="proj-img-wrap">
+            <video class="proj-img" src="projects/prism/prismdemo.webm" autoplay muted loop playsinline></video>
+        </div>
+        <div class="proj-info">
+            <div class="proj-title">Prism</div>
+            <div class="proj-subtitle">Live Effects Studio</div>
+            <div class="proj-tags">
+                <span class="tag">JavaScript</span>
+                <span class="tag">HTML5 Canvas</span>
+                <span class="tag">MediaPipe</span>
+                <span class="tag">Computer Vision</span>
+                <span class="tag">Webcam</span>
+            </div>
+            <div class="proj-desc">
+                <p>A browser-based webcam effects studio that turns your camera feed into an interactive visual instrument. Control everything with your hands. Runs entirely in the browser with no installation or server required.</p>
+                <ul class="proj-feat-list">
+                    <li><a href="https://rrly.github.io/prism/" target="_blank" rel="noopener" class="proj-demo-link">·· click here to try it out! ··</a></li>
+                    <li><strong>Sphere</strong>: glowing energy vortex anchored to your fingertip centroid; radius scales with finger spread, emits particle rings and light rays</li>
+                    <li><strong>Prism</strong>: a 14-vertex crystal with per-pixel barrel distortion and chromatic aberration overlaid on the live feed; spans between two hands when both are detected</li>
+                    <li><strong>Glitch</strong>: hand-tracked floating window applying RGB channel separation, scanline displacement, and color inversion in real time</li>
+                    <li><strong>Pixel</strong>: stackable hand-tracked pixelation windows; lock with a pinch gesture, wipe with an open palm; overlapping windows re-pixelate naturally</li>
+                    <li>Hand hover mode selection: hold index finger over any button for 5 seconds to switch modes without clicking</li>
                 </ul>
             </div>
         </div>
