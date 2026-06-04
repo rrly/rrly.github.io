@@ -1,78 +1,586 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRISM — Live Effects Studio</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noarchive, noimageindex">
+    <title>Ritchie Ly, Software Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app">
-  <div id="stage">
-    <!-- Base layers -->
-    <div id="scanline"></div>
-    <video id="video" autoplay playsinline muted></video>
-    <canvas id="canvas"></canvas>
 
-    <div id="placeholder">
-      <div class="ph-icon">◉</div>
-      <p class="ph-text">Webcam Required</p>
-      <button id="init-btn" onclick="initCamera()">Initialize Camera</button>
+<!-- ══ NAV ═══════════════════════════════════════════ -->
+<nav>
+    <a class="nav-logo" data-module="about">RL</a>
+    <ul class="nav-links">
+        <li><button class="nav-btn" data-module="about">about</button></li>
+        <li><button class="nav-btn" data-module="projects">projects</button></li>
+        <li><button class="nav-btn" data-module="skills">skills</button></li>
+        <li><button class="nav-btn" data-module="experience">experience</button></li>
+        <li><button class="nav-btn" data-module="contact">contact</button></li>
+    </ul>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════ -->
+<section id="hero">
+    <div class="scanlines"></div>
+    <svg class="reticle" id="clock-face" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Concentric rings -->
+        <circle cx="100" cy="100" r="98" fill="none" stroke="rgba(7,21,32,0.10)" stroke-width="0.8"/>
+        <circle cx="100" cy="100" r="82" fill="none" stroke="rgba(7,21,32,0.07)" stroke-width="0.6"/>
+        <circle cx="100" cy="100" r="62" fill="none" stroke="rgba(7,21,32,0.05)" stroke-width="0.5"/>
+        <!-- Cardinal ticks (12, 3, 6, 9) -->
+        <line x1="100" y1="3"  x2="100" y2="18" stroke="rgba(7,21,32,0.22)" stroke-width="1"/>
+        <line x1="100" y1="3"  x2="100" y2="18" stroke="rgba(7,21,32,0.22)" stroke-width="1"   transform="rotate(90,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="18" stroke="rgba(7,21,32,0.22)" stroke-width="1"   transform="rotate(180,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="18" stroke="rgba(7,21,32,0.22)" stroke-width="1"   transform="rotate(270,100,100)"/>
+        <!-- Minor ticks -->
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(30,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(60,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(120,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(150,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(210,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(240,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(300,100,100)"/>
+        <line x1="100" y1="3"  x2="100" y2="11" stroke="rgba(7,21,32,0.12)" stroke-width="0.6" transform="rotate(330,100,100)"/>
+        <!-- Radar pulse rings -->
+        <circle class="radar-pulse" cx="100" cy="100" r="94" fill="none"/>
+        <circle class="radar-pulse" cx="100" cy="100" r="94" fill="none" style="animation-delay:-3s"/>
+        <circle class="radar-pulse" cx="100" cy="100" r="94" fill="none" style="animation-delay:-6s"/>
+        <!-- Hands (initial 12 o'clock; JS rotates them) -->
+        <line id="clock-hour" x1="100" y1="100" x2="100" y2="58" stroke="rgba(7,21,32,0.60)" stroke-width="1.5" stroke-linecap="square"/>
+        <line id="clock-min"  x1="100" y1="100" x2="100" y2="36" stroke="rgba(7,21,32,0.45)" stroke-width="1"   stroke-linecap="square"/>
+        <line id="clock-sec"  x1="100" y1="100" x2="100" y2="26" stroke="rgba(7,21,32,0.28)" stroke-width="0.5" stroke-linecap="butt"/>
+        <!-- Center square -->
+        <rect x="98" y="98" width="4" height="4" fill="rgba(7,21,32,0.50)"/>
+    </svg>
+
+    <div class="px-field">
+        <div class="px" style="width:48px;height:48px;top:12%;right:9%;opacity:0.72"></div>
+        <div class="px" style="width:27px;height:27px;top:20%;right:20%;opacity:0.58"></div>
+        <div class="px" style="width:16px;height:16px;top:27%;right:13%;opacity:0.45"></div>
+        <div class="px" style="width:35px;height:35px;top:15%;right:31%;opacity:0.4"></div>
+        <div class="px" style="width:11px;height:11px;top:33%;right:23%;opacity:0.62"></div>
+        <div class="px" style="width:58px;height:58px;bottom:14%;left:5%;opacity:0.35"></div>
+        <div class="px" style="width:23px;height:23px;bottom:23%;left:15%;opacity:0.52"></div>
+        <div class="px" style="width:31px;height:31px;bottom:18%;left:10%;opacity:0.3"></div>
+        <div class="px" style="width:14px;height:14px;top:46%;right:5%;opacity:0.56"></div>
+        <div class="px" style="width:42px;height:42px;top:56%;right:2%;opacity:0.24"></div>
+        <div class="px" style="width:9px;height:9px;top:39%;right:39%;opacity:0.62"></div>
+        <div class="px" style="width:20px;height:20px;top:67%;left:46%;opacity:0.3"></div>
+        <div class="px" style="width:7px;height:7px;bottom:33%;right:26%;opacity:0.68"></div>
+        <div class="px" style="width:15px;height:15px;top:73%;right:16%;opacity:0.35"></div>
+        <div class="px" style="width:30px;height:30px;top:21%;left:37%;opacity:0.22"></div>
     </div>
 
-    <!-- UI overlays (all position:absolute, contained within stage) -->
-    <header id="header">
-      <div class="logo">PRISM <em>// EFFECTS STUDIO</em></div>
-      <div id="live-badge"><div id="live-dot"></div><span id="live-text">OFFLINE</span></div>
-    </header>
+    <div class="ch ch-tl"></div>
+    <div class="ch ch-tr"></div>
+    <div class="ch ch-bl"></div>
+    <div class="ch ch-br"></div>
+    <div class="hero-vdata">[ 00 ] ritchie ly · fullstack engineer · bay area ca · 2026 [ / ]</div>
 
-    <div id="mode-tag" class="show">
-      <div id="mode-label">RAW</div>
-      <div id="mode-sub">Unfiltered Feed</div>
+    <div class="hero-inner">
+        <div class="hero-eyebrow">Bay Area, CA &nbsp;·&nbsp; Best Coast, West Coast ;)</div>
+
+        <h1 class="hero-name">
+            ritchie<br>
+            <span class="name-boxed">ly.</span>
+        </h1>
+
+        <span class="hero-club"></span>
+
+        <div class="hero-tag">
+            <div class="hero-tag-pip"></div>
+            <span class="hero-tag-text">·· fullstack software engineer</span>
+        </div>
+
+        <p class="hero-summary">
+            7+ years shipping scalable web apps and backend systems.<br>
+            React · Node · JS/TS · Ruby · Java · C++ · C · Python<br>
+            From requirement to deployment · LLM-native throughout.
+        </p>
+
+        <div class="hero-cta">
+            <button class="btn btn-ghost" data-module="about">about</button>
+            <button class="btn btn-ghost" data-module="projects">projects</button>
+            <button class="btn btn-ghost" data-module="skills">skills</button>
+            <button class="btn btn-ghost" data-module="experience">experience</button>
+            <button class="btn btn-ghost" data-module="contact">contact</button>
+        </div>
     </div>
 
-    <div id="hand-status">
-      <div class="hs-row"><div class="hs-dot" id="hd0"></div><span>Hand 1</span></div>
-      <div class="hs-row"><div class="hs-dot" id="hd1"></div><span>Hand 2</span></div>
+    <div class="hero-hint">
+        <span class="hint-txt">·· 2026 ··</span>
     </div>
+</section>
 
-    <div id="scan-hint"><div class="sh-text">⊛ Raise your hands to the camera</div></div>
-
-    <div id="fps">-- FPS</div>
-
-    <div id="pixel-info">PIXEL: <span id="pxval">12</span>px · <span id="pxwins">0</span> win · +/- size · C clear</div>
-
-    <div id="controls">
-      <button class="btn active" data-mode="raw" onclick="setMode('raw')">
-        <span class="btn-ico">◎</span><span class="btn-lbl">Raw</span>
-      </button>
-      <button class="btn" data-mode="sphere" onclick="setMode('sphere')">
-        <span class="btn-ico">⊛</span><span class="btn-lbl">Sphere</span>
-      </button>
-      <button class="btn" data-mode="prism" onclick="setMode('prism')">
-        <span class="btn-ico">◈</span><span class="btn-lbl">Prism</span>
-      </button>
-      <button class="btn" data-mode="glitch" onclick="setMode('glitch')">
-        <span class="btn-ico">▦</span><span class="btn-lbl">Glitch</span>
-      </button>
-      <button class="btn" data-mode="pixelate" onclick="setMode('pixelate')">
-        <span class="btn-ico">▤</span><span class="btn-lbl">Pixel</span>
-      </button>
+<!-- ══ MODULE OVERLAY ════════════════════════════════ -->
+<div id="mod-overlay" class="mod-overlay" role="dialog" aria-modal="true">
+    <div class="mod-panel" id="mod-panel">
+        <div class="mod-ch mod-ch-tl"></div>
+        <div class="mod-ch mod-ch-tr"></div>
+        <div class="mod-ch mod-ch-bl"></div>
+        <div class="mod-ch mod-ch-br"></div>
+        <div class="mod-header">
+            <span class="mod-title" id="mod-title">about</span>
+            <button class="mod-close" id="mod-close">×</button>
+        </div>
+        <div class="mod-body" id="mod-body"></div>
     </div>
-
-    <!-- Hand-hover mode selection timer (positioned relative to stage) -->
-    <div id="hover-timer">
-      <svg viewBox="0 0 54 54">
-        <circle class="ht-bg"  cx="27" cy="27" r="19"/>
-        <circle class="ht-ring" cx="27" cy="27" r="19"/>
-      </svg>
-      <span id="ht-count">5</span>
-    </div>
-  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
-<script src="script.js"></script>
+<!-- ══ MODULE CONTENT TEMPLATES ══════════════════════ -->
+<template id="tpl-about">
+    <h2 class="sec-title">who i <span class="ac">am</span></h2>
+    <div class="about-grid">
+        <div class="about-text">
+            <p>I'm a <strong>fullstack software engineer</strong> based in the Bay Area with 7+ years working on production web apps and backend systems. Most recently at HCL BigFix, where I spent five years shipping features for enterprise endpoint management used by large organizations worldwide.</p>
+            <p>Day to day I work across the stack: <strong>React/Angular/JS/TS</strong> on the front end, <strong>Node/Python</strong> and REST APIs in the back, containers and CI/CD pipelines keeping everything moving. I tend to own things end to end rather than hand off at the edges.</p>
+            <p>Over the past couple years I've been building with LLMs pretty heavily. OpenAI, Claude, Gemini, Llama. Less hype, more wiring them into real workflows where they actually save time.</p>
+            <p>I Studied Computer Engineering at Cal Poly San Luis Obispo. Bay Area native and still here. Outside of work I'm usually tinkering on something, whether or not it ships.</p>
+        </div>
+        <div class="stats">
+            <div class="stat"><div class="stat-n">7+</div><div class="stat-l">years experience</div></div>
+            <div class="stat"><div class="stat-n">10+</div><div class="stat-l">languages &amp; frameworks</div></div>
+            <div class="stat"><div class="stat-n">50%</div><div class="stat-l">perf gains delivered</div></div>
+            <div class="stat"><div class="stat-n">∞</div><div class="stat-l">lines shipped</div></div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-skills">
+    <h2 class="sec-title">tech <span class="ac">stack</span></h2>
+    <div class="skill-grid">
+        <div class="skill-card">
+            <div class="skill-lbl">languages</div>
+            <div class="tags">
+                <span class="tag">JavaScript</span><span class="tag">TypeScript</span>
+                <span class="tag">Ruby</span>
+                <span class="tag">Java</span><span class="tag">Python</span>
+                <span class="tag">C++</span><span class="tag">SQL</span>
+                <span class="tag">HTML5</span><span class="tag">CSS3</span>
+                <span class="tag">Assembly</span><span class="tag">Lua</span>
+            </div>
+        </div>
+        <div class="skill-card">
+            <div class="skill-lbl">frameworks</div>
+            <div class="tags">
+                <span class="tag">ReactJS</span><span class="tag">AngularJS</span>
+                <span class="tag">NodeJS</span><span class="tag">Ruby on Rails</span>
+                <span class="tag">RESTful APIs</span>
+            </div>
+        </div>
+        <div class="skill-card">
+            <div class="skill-lbl">databases</div>
+            <div class="tags">
+                <span class="tag">MySQL</span>
+                <span class="tag">PostgreSQL</span>
+                <span class="tag">MongoDB</span>
+            </div>
+        </div>
+        <div class="skill-card">
+            <div class="skill-lbl">devops &amp; cloud</div>
+            <div class="tags">
+                <span class="tag">Docker</span><span class="tag">Kubernetes</span>
+                <span class="tag">AWS</span><span class="tag">CI/CD</span>
+                <span class="tag">Jenkins</span><span class="tag">GitHub</span>
+                <span class="tag">Artifactory</span><span class="tag">VMware</span>
+            </div>
+        </div>
+        <div class="skill-card">
+            <div class="skill-lbl">practices</div>
+            <div class="tags">
+                <span class="tag">Agile / Scrum</span><span class="tag">TDD</span>
+                <span class="tag">Microservices</span><span class="tag">IaC</span>
+                <span class="tag">Code Review</span><span class="tag">Cross-browser</span>
+                <span class="tag">Async Programming</span>
+            </div>
+        </div>
+        <div class="skill-card">
+            <div class="skill-lbl">llm ecosystems</div>
+            <div class="tags">
+                <span class="tag">OpenAI GPT</span>
+                <span class="tag">Anthropic Claude</span>
+                <span class="tag">Google Gemini</span>
+                <span class="tag">Meta Llama</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-experience">
+    <h2 class="sec-title">work <span class="ac">history</span></h2>
+    <div class="timeline">
+        <div class="tl-item">
+            <div class="tl-date">jul 2019 — aug 2024</div>
+            <div class="tl-role">Software Engineer</div>
+            <div class="tl-co">HCL BigFix — Emeryville, CA</div>
+            <ul class="tl-list">
+                <li>Developed fullstack features for enterprise endpoint management using Ruby, ReactJS, AngularJS, and NodeJS</li>
+                <li>Built scalable APIs and integrated backend microservices with dynamic front-end components</li>
+                <li>Refactored legacy codebases, increasing performance by up to <em>50%</em> and reducing technical debt</li>
+                <li>Designed and executed CI/CD pipelines via Jenkins, GitHub, and Artifactory</li>
+                <li>Collaborated in Agile sprints, code reviews, sprint planning, and daily standups</li>
+                <li>Partnered with QA and DevOps on scalability, reliability, and test coverage</li>
+            </ul>
+        </div>
+        <div class="tl-item">
+            <div class="tl-date">jul 2017 — mar 2018</div>
+            <div class="tl-role">Application Developer I</div>
+            <div class="tl-co">Workday Inc — Pleasanton, CA</div>
+            <ul class="tl-list">
+                <li>Contributed to frontend for Workday's SaaS payroll platform using Java and XpressO OOP</li>
+                <li>Designed systems to update tax rates across U.S. territories in real time</li>
+                <li>Created reusable components and implemented TDD with WATS</li>
+                <li>Reduced redundancy by over <em>50%</em> through client-specific feature delivery</li>
+            </ul>
+        </div>
+        <div class="tl-item">
+            <div class="tl-date">may 2014 — jun 2016</div>
+            <div class="tl-role">Network Admin / DNS Assistant</div>
+            <div class="tl-co">Cal Poly SLO</div>
+            <ul class="tl-list">
+                <li>Maintained DNS and DHCP for 1,000+ campus devices across 10+ departments</li>
+                <li>Provisioned and maintained servers, switches, and wireless equipment</li>
+                <li>Managed access points with load balancing for variable traffic demands</li>
+            </ul>
+        </div>
+    </div>
+</template>
+
+<template id="tpl-projects">
+    <h2 class="sec-title">personal <span class="ac">builds</span></h2>
+    <div class="proj-tabs">
+        <button class="proj-tab proj-tab-active" data-project="satty">[ satty ]</button>
+        <button class="proj-tab" data-project="match3r">[ match3r ]</button>
+        <button class="proj-tab" data-project="prism">[ prism ]</button>
+    </div>
+
+    <div class="proj-panels-wrap">
+    <div class="proj-panel proj-panel-visible" data-project-panel="satty">
+        <div class="proj-img-wrap">
+            <img class="proj-img" src="projects/SATTY/SATTY_screenshot.JPG" alt="SATTY audio plugin screenshot">
+        </div>
+        <div class="proj-info">
+            <div class="proj-title">SATTY</div>
+            <div class="proj-subtitle">VST3 · AU · Standalone Audio Plugin</div>
+            <div class="proj-tags">
+                <span class="tag">C++</span>
+                <span class="tag">JUCE</span>
+                <span class="tag">DSP</span>
+                <span class="tag">VST3 / AU</span>
+                <span class="tag">Audio Plugin</span>
+            </div>
+            <div class="proj-desc">
+                <p>A stereo audio saturator plugin built in C++ with the JUCE framework. Inspired by the Fatness/Color interaction of Sausage Fattener and the always-on character of saturators like OTT.</p>
+                <ul class="proj-feat-list">
+                    <li><strong>6 saturation modes:</strong> Fatness (blended), Soft (tanh), Tube (asymmetric even harmonics), Tape (rational curve), Diode (aggressive), Hard Clip</li>
+                    <li><strong>Fatness knob</strong> drives the saturator from unity up to ~12x gain into the curve</li>
+                    <li><strong>Color knob</strong> tilts the pre-saturation EQ (dark to bright) and in Fatness mode crossfades between tape-style warm and tanh-style clean saturation</li>
+                    <li><strong>4x IIR oversampling</strong> to control aliasing when the signal gets crushed</li>
+                    <li>DC blocker on output, smoothed parameters (no zipper noise), dry/wet mix, input and output gain</li>
+                    <li>State save/restore via AudioProcessorValueTreeState — presets and DAW automation work out of the box</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="proj-panel" data-project-panel="match3r">
+        <div class="proj-img-wrap">
+            <img class="proj-img" src="projects/Match3r/match3r.gif" alt="Match3r gameplay">
+        </div>
+        <div class="proj-info">
+            <div class="proj-title">Match3r</div>
+            <div class="proj-subtitle">Roguelike Match-3 Adventure Game</div>
+            <div class="proj-tags">
+                <span class="tag">JavaScript</span>
+                <span class="tag">HTML5</span>
+                <span class="tag">CSS3</span>
+                <span class="tag">Game Dev</span>
+                <span class="tag">Roguelike</span>
+            </div>
+            <div class="proj-desc">
+                <p>A roguelike match-3 adventure game. Match tiles to attack enemies, descend through floors, level up your hero, and unlock new classes through persistent progression.</p>
+                <ul class="proj-feat-list">
+                    <li>Match 3+ tiles in a row or column by swapping adjacent tiles. Tile types: attack, defense, magic, heal, gold, box, ticket, bomb</li>
+                    <li>Clear the enemy on each floor to advance. Every 5th floor is a boss fight</li>
+                    <li>On level up, choose 1 of 3 upgrades across 4 rarity tiers: common, uncommon, rare, epic</li>
+                    <li><strong>25 classes</strong> with 3 unlocked by default (Knight, Mage, Banker) and 22 unlockable via tickets and stat requirements</li>
+                    <li><strong>84 upgrades</strong> across all rarity tiers</li>
+                    <li>Persistent progression stored in localStorage. Export or import all data as a JSON save file via the Options menu</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="proj-panel" data-project-panel="prism">
+        <div class="proj-img-wrap">
+            <video class="proj-img" src="projects/prism/prismdemo.webm" autoplay muted loop playsinline></video>
+        </div>
+        <div class="proj-info">
+            <div class="proj-title">Prism</div>
+            <div class="proj-subtitle">Live Effects Studio</div>
+            <div class="proj-tags">
+                <span class="tag">JavaScript</span>
+                <span class="tag">HTML5 Canvas</span>
+                <span class="tag">MediaPipe</span>
+                <span class="tag">Computer Vision</span>
+                <span class="tag">Webcam</span>
+            </div>
+            <div class="proj-desc">
+                <p>A browser-based webcam effects studio that turns your camera feed into an interactive visual instrument. Control everything with your hands. Runs entirely in the browser with no installation or server required.</p>
+                <ul class="proj-feat-list">
+                    <li><a href="https://rrly.github.io/prism/" target="_blank" rel="noopener" class="proj-demo-link">·· click here to try it out! ··</a></li>
+                    <li><strong>Sphere</strong>: glowing energy vortex anchored to your fingertip centroid; radius scales with finger spread, emits particle rings and light rays</li>
+                    <li><strong>Prism</strong>: a 14-vertex crystal with per-pixel barrel distortion and chromatic aberration overlaid on the live feed; spans between two hands when both are detected</li>
+                    <li><strong>Glitch</strong>: hand-tracked floating window applying RGB channel separation, scanline displacement, and color inversion in real time</li>
+                    <li><strong>Pixel</strong>: stackable hand-tracked pixelation windows; lock with a pinch gesture, wipe with an open palm; overlapping windows re-pixelate naturally</li>
+                    <li>Hand hover mode selection: hold index finger over any button for 5 seconds to switch modes without clicking</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div><!-- /.proj-panels-wrap -->
+</template>
+
+<template id="tpl-contact">
+    <h2 class="sec-title">let's connect and <span class="ac">build.</span></h2>
+    <div class="contact-grid">
+        <div>
+            <p class="contact-sub">
+                Open to new roles, freelance work, and interesting engineering challenges.
+                Bay Area based — remote-friendly.
+            </p>
+        </div>
+        <div class="contact-rows">
+            <a class="c-row c-email-row">
+                <span class="c-icon">@</span>
+                <span class="c-meta"><span class="c-key">email</span><span class="c-val" data-m1="rrly89" data-m2="gmail" data-m3="com"></span></span>
+            </a>
+            <a href="https://www.linkedin.com/in/rrlyrrly/" target="_blank" rel="noopener" class="c-row">
+                <span class="c-icon">in</span>
+                <span class="c-meta"><span class="c-key">linkedin</span><span class="c-val">linkedin.com/in/rrlyrrly</span></span>
+            </a>
+            <div class="c-row" style="cursor:default">
+                <span class="c-icon">·</span>
+                <span class="c-meta"><span class="c-key">location</span><span class="c-val">Bay Area, CA</span></span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    /* ── Module overlay ─────────────────────────────── */
+    const overlay   = document.getElementById('mod-overlay');
+    const modBody   = document.getElementById('mod-body');
+    const modTitle  = document.getElementById('mod-title');
+    const closeBtn  = document.getElementById('mod-close');
+
+    const titles = {
+        about:      '001 — about',
+        projects:   '002 — projects',
+        skills:     '003 — skills',
+        experience: '004 — experience',
+        contact:    '005 — contact'
+    };
+
+    let currentModule = null;
+
+    function openModule(name) {
+        const tpl = document.getElementById('tpl-' + name);
+        if (!tpl) return;
+        modTitle.textContent = titles[name];
+        modBody.innerHTML = tpl.innerHTML;
+
+        /* reconstruct contact fields from split data — keeps raw addresses out of HTML */
+        if (name === 'contact') {
+            const mEl = modBody.querySelector('[data-m1]');
+            if (mEl) {
+                const addr = mEl.dataset.m1 + '\x40' + mEl.dataset.m2 + '\x2E' + mEl.dataset.m3;
+                mEl.textContent = addr;
+                mEl.closest('a').setAttribute('href', 'mai' + 'lto:' + addr);
+            }
+        }
+
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('mod-panel').scrollTop = 0;
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.module === name);
+        });
+        currentModule = name;
+    }
+
+    function closeModule() {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        currentModule = null;
+    }
+
+    document.querySelectorAll('[data-module]').forEach(el => {
+        el.addEventListener('click', e => {
+            e.preventDefault();
+            const name = el.dataset.module;
+            if (currentModule === name) closeModule();
+            else openModule(name);
+        });
+    });
+
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModule(); });
+    closeBtn.addEventListener('click', closeModule);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && currentModule) closeModule(); });
+
+    /* inner project tab switching (delegated — content injected dynamically) */
+    modBody.addEventListener('click', e => {
+        const btn = e.target.closest('[data-project]');
+        if (!btn) return;
+        const name = btn.dataset.project;
+        modBody.querySelectorAll('.proj-panel').forEach(p => {
+            p.classList.toggle('proj-panel-visible', p.dataset.projectPanel === name);
+        });
+        modBody.querySelectorAll('[data-project]').forEach(b => {
+            b.classList.toggle('proj-tab-active', b.dataset.project === name);
+        });
+    });
+
+    /* ── Bouncing pixel squares ─────────────────────── */
+    (function () {
+        const squares = Array.from(document.querySelectorAll('.px'));
+
+        const particles = squares.map(el => {
+            const w = parseFloat(el.style.width)   || 20;
+            const h = parseFloat(el.style.height)  || 20;
+            const op = parseFloat(el.style.opacity) || 0.4;
+
+            const x = Math.random() * (window.innerWidth  - w);
+            const y = Math.random() * (window.innerHeight - h);
+            const speed = 0.18 + Math.random() * 0.32;
+            const angle = Math.random() * Math.PI * 2;
+
+            el.style.top    = '0';
+            el.style.left   = '0';
+            el.style.right  = '';
+            el.style.bottom = '';
+            el.style.opacity = op;
+            el.style.willChange = 'transform';
+            el.style.transform = `translate(${x}px,${y}px)`;
+
+            return { el, x, y, w, h, dx: Math.cos(angle) * speed, dy: Math.sin(angle) * speed };
+        });
+
+        function tick() {
+            const W = window.innerWidth;
+            const H = window.innerHeight;
+            for (const p of particles) {
+                p.x += p.dx;
+                p.y += p.dy;
+                if (p.x < 0)       { p.x = 0;       p.dx =  Math.abs(p.dx); }
+                if (p.x > W - p.w) { p.x = W - p.w; p.dx = -Math.abs(p.dx); }
+                if (p.y < 0)       { p.y = 0;        p.dy =  Math.abs(p.dy); }
+                if (p.y > H - p.h) { p.y = H - p.h; p.dy = -Math.abs(p.dy); }
+                p.el.style.transform = `translate(${p.x}px,${p.y}px)`;
+            }
+            requestAnimationFrame(tick);
+        }
+        tick();
+    })();
+
+    /* ── Analog clock ───────────────────────────────── */
+    (function () {
+        function setHand(id, deg, len) {
+            const rad = (deg - 90) * Math.PI / 180;
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.setAttribute('x2', (100 + len * Math.cos(rad)).toFixed(3));
+            el.setAttribute('y2', (100 + len * Math.sin(rad)).toFixed(3));
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const h  = now.getHours() % 12;
+            const m  = now.getMinutes();
+            const s  = now.getSeconds();
+            const ms = now.getMilliseconds();
+            setHand('clock-hour', (h + m / 60) * 30,              42);
+            setHand('clock-min',  (m + (s + ms / 1000) / 60) * 6, 64);
+            setHand('clock-sec',  (s + ms / 1000) * 6,            74);
+        }
+
+        updateClock();
+        setInterval(updateClock, 50);
+    })();
+
+    /* ── Text scramble on hover ─────────────────────── */
+    (function () {
+        const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789·://[]';
+        function scramble(el) {
+            if (el._scram) return;
+            const orig = el.dataset.orig || el.textContent.trim();
+            el.dataset.orig = orig;
+            el.style.minWidth = el.offsetWidth + 'px';
+            el._scram = true;
+            let f = 0, total = 16;
+            el._scramId = setInterval(() => {
+                el.textContent = orig.split('').map((ch, i) => {
+                    if (ch === ' ') return ' ';
+                    return f / total > i / orig.length ? ch : CHARS[Math.floor(Math.random() * CHARS.length)];
+                }).join('');
+                if (++f > total) {
+                    el.textContent = orig;
+                    el._scram = false;
+                    el.style.minWidth = '';
+                    clearInterval(el._scramId);
+                }
+            }, 28);
+        }
+        function unscramble(el) {
+            clearInterval(el._scramId);
+            el._scram = false;
+            el.style.minWidth = '';
+            if (el.dataset.orig) el.textContent = el.dataset.orig;
+        }
+        document.querySelectorAll('.nav-btn, .btn-ghost').forEach(el => {
+            el.addEventListener('mouseenter', () => scramble(el));
+            el.addEventListener('mouseleave', () => unscramble(el));
+        });
+    })();
+
+    /* ── Floating coordinate labels ─────────────────── */
+    (function () {
+        const hero = document.getElementById('hero');
+        const pool = [
+            '+37.6879 / -122.157', 'SYS: READY', '[ SIGNAL: OK ]',
+            'NODE_01', 'LAT: 37.6879', 'LNG: -122.157',
+            '·· ACTIVE ··', 'FREQ: 94.1', 'PKT: 0xFF',
+            '[ TX: ON ]', 'SYNC: OK', '[ RX: STANDBY ]',
+            'BAY AREA · CA', '[ DATA ]', 'UPTIME: OK'
+        ];
+        function spawn() {
+            const el = document.createElement('div');
+            el.className = 'float-label';
+            el.textContent = pool[Math.floor(Math.random() * pool.length)];
+            el.style.left = (4 + Math.random() * 88) + '%';
+            el.style.top  = (15 + Math.random() * 68) + '%';
+            hero.appendChild(el);
+            const dur = 4000 + Math.random() * 2500;
+            el.animate([
+                { opacity: 0,    transform: 'translateY(0px)'   },
+                { opacity: 0.22, transform: 'translateY(-12px)', offset: 0.18 },
+                { opacity: 0.22, transform: 'translateY(-45px)', offset: 0.78 },
+                { opacity: 0,    transform: 'translateY(-64px)' }
+            ], { duration: dur, easing: 'linear' }).onfinish = () => el.remove();
+            setTimeout(spawn, 1400 + Math.random() * 1600);
+        }
+        setTimeout(spawn, 800);
+        setTimeout(spawn, 1500);
+        setTimeout(spawn, 2200);
+    })();
+</script>
+<!-- contact trap - not for human use -->
+<a href="mailto:scraper-trap@rrly.dev" aria-hidden="true" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;pointer-events:none"></a>
 </body>
 </html>
