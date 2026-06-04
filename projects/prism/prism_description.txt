@@ -1,0 +1,160 @@
+PRISM — Live Effects Studio
+═══════════════════════════════════════════════════════════
+
+
+HIGH-LEVEL DESCRIPTION
+──────────────────────
+PRISM is a browser-based webcam effects studio that turns your camera feed into an
+interactive visual instrument. Using only your hands — no controllers, no clicks —
+you can apply real-time visual effects to your live video, create pixel art windows,
+summon glowing energy spheres, refract light through a virtual crystal, and corrupt
+the image with digital glitch artifacts.
+
+The app is designed around gestural control: MediaPipe hand tracking reads the
+position of your fingertips frame-by-frame and maps them to creative tools. You can
+select effect modes by hovering your index finger over a button for five seconds, or
+click as normal. Each effect mode is a distinct visual world with its own interaction
+model, all overlaid on the live webcam feed in real time.
+
+PRISM runs entirely in the browser — no installation, no server, no account. Open
+the HTML file, grant camera permission, and start playing.
+
+
+EFFECT MODES
+────────────
+RAW
+  Clean, unfiltered webcam feed. Used as a neutral starting point or for navigating
+  menus via hand hover without any visual processing applied.
+
+SPHERE
+  MediaPipe tracks the thumb and index fingertips of both hands. The centroid of all
+  detected fingertips becomes the center of a glowing energy vortex. The sphere's
+  radius expands and contracts with finger spread, pulses in sync with an internal
+  breathing rhythm, emits rotating particle rings at three orbital distances, fires
+  eight animated light rays, and spawns outward sparks. When no hands are present,
+  an ambient idle sphere drifts in the center of the frame. The full hand skeleton
+  is drawn as a transparent overlay so tracking is always visible.
+
+PRISM
+  MediaPipe tracks the same thumb and index points, but the crystal's shape and
+  orientation respond to hand geometry differently. With one hand, the crystal aligns
+  along the thumb-to-index axis; the finger spread sets the length and the pinch
+  distance sets the width. With two hands, the crystal spans between both hands —
+  the hand-to-hand direction becomes the crystal's long axis, the hand-to-hand
+  distance sets the length, and the average pinch distance on each hand sets the
+  width. The crystal is a 14-vertex gem shape with 12 distinct facets, each shaded
+  at a different lightness and hue. The webcam image inside the crystal is distorted
+  via per-pixel barrel (convex-lens) distortion with chromatic aberration — red
+  channels shift outward, blue channels inward — then drawn back through a clip path
+  with a subtle blur for a frosted-glass edge. A rainbow dispersion fan emanates from
+  the crystal's side face, and the table facet pulses a lens-flare sparkle.
+
+GLITCH
+  MediaPipe tracks thumb and index to define a floating, resizable rectangular window.
+  The window follows the bounding box of all detected fingertips and smoothly lerps
+  to new positions. Inside the window, three pixel-level operations run each frame:
+  RGB channel separation (red shifted right, blue shifted left by a variable amount),
+  random horizontal scanline displacement blocks, and occasional color inversion
+  rectangles. A glitchy animated border with corner handles frames the window; an
+  ERR hex code flickers below it. The window freezes at its last position when hands
+  leave the frame, continuing to glitch until repositioned.
+
+PIXEL
+  Hand-tracked windowed pixelation. Raise your hands with thumb and index extended
+  to draw a preview rectangle — the pixelation is applied live inside it. Curl your
+  middle, ring, and pinky fingers into your palm (keeping index and thumb up) to lock
+  the window permanently on screen; the border flashes green to confirm. Open your
+  palm flat and sweep it over any locked window to wipe it. Multiple windows can be
+  stacked — overlapping regions are re-pixelated on each pass, naturally doubling or
+  tripling the effective block size in the overlap zone (layering effect). Base pixel
+  size is adjustable with + / - keys. Press C to clear all windows.
+
+
+HAND HOVER MODE SELECTION
+──────────────────────────
+In every mode, the index fingertip of the first detected hand acts as a pointer. Hold
+it over any effect button for five seconds to switch modes without clicking. A cyan
+SVG ring fills around the button as a countdown, and the number ticks down 5 → 1. If
+the finger moves off the button, the timer resets.
+
+
+LOW-LEVEL DESCRIPTION
+─────────────────────
+Stack
+  Single-page application. No framework, no build step, no bundler. Two files:
+  prism.html (markup + JavaScript) and style.css. All JavaScript is vanilla ES2020+
+  running directly in the browser. MediaPipe Hands is loaded from the jsDelivr CDN
+  at runtime.
+
+Rendering pipeline
+  getUserMedia → hidden <video> element → requestAnimationFrame loop draws the
+  mirrored video to a <canvas> at every frame → effect function reads from and writes
+  to that canvas → UI overlays (HTML elements) sit in absolute position inside the
+  same stage container.
+
+  The canvas is sized to match the stage's CSS bounding rect (not the device pixel
+  ratio), so canvas pixels equal CSS pixels. The stage itself is constrained to
+  16:9 at the maximum size that fits the viewport: width: min(100vw, 100vh × 16/9)
+  with aspect-ratio: 16/9, centered in a flex container with black letterbox bars.
+
+Hand tracking
+  MediaPipe Hands (v0 task API) runs in a setInterval at ~24 fps, independent of the
+  render loop, feeding frames from the video element via hands.send({ image: video }).
+  Results land in a global handsResult object that the next render frame reads. This
+  decouples tracking latency from display latency. MediaPipe runs in all modes so
+  the hand-hover button selection always works.
+
+  All landmark x-coordinates are flipped (canvas_x = (1 - lm.x) * W) because the
+  video is drawn mirrored (ctx.scale(-1, 1)) to match natural self-view.
+
+Sphere effect
+  90 particles are pre-initialised with random orbital parameters (ring index 0–2,
+  angle, speed, tilt phase). Each frame, particle angles increment, then each particle
+  is drawn at its elliptical orbit position with depth-based opacity. Separate passes
+  draw: outer halo gradients, three dashed elliptical rings (rotating at different
+  rates and tilts), the particle orbits, eight light rays (LinearGradient strokes),
+  and sparks (spawned at ~50% chance per frame, velocity-decayed over lifetime).
+  The sphere center and radius are smoothly lerped toward the hand-target each frame.
+
+Prism effect
+  Crystal geometry is defined as 14 normalized [x, y] vertices (10 outer forming the
+  silhouette + 4 inner forming the table facet). xtalTransform() scales x by rW and y
+  by rH independently before applying a rotation matrix, enabling non-square crystals.
+  Refraction uses getImageData on the bounding box, applies barrel distortion
+  (magnification toward center) and per-channel chromatic aberration in a pixel loop,
+  writes the result to the offscreen canvas, then draws it back to the main canvas
+  through a clip path with ctx.filter = blur(Xpx) for the frosted-glass edge. Crystal
+  facets are drawn as semi-transparent filled polygons. Glowing edges use
+  ctx.filter = blur(10px) on a thick stroke for the outer bloom, plus ctx.shadowBlur
+  on the crisp edge line and inner facet lines.
+
+Glitch effect
+  getImageData reads only the window region (not the full canvas) to keep pixel
+  operations bounded. Three passes mutate the byte array: channel shift iterates all
+  rows and re-indexes red/blue channels with a per-row random extra offset; scanline
+  displacement randomly selects short row spans and offsets them horizontally (modulo
+  window width so pixels wrap within the window); inversion picks a random subrect
+  and XORs each channel with 255. putImageData writes the result back. Scanline and
+  color-wash overlays are drawn with fillRect. The border jitters by a random pixel
+  offset each frame proportional to glitch intensity.
+
+Pixel effect
+  applyWindowPixelate reads getImageData from the live display canvas (not offscreen),
+  samples the center pixel of each block, and redraws filled rectangles. Because it
+  reads from the same canvas it writes to, any previously pixelated window is already
+  in the canvas data when the next window reads it — overlapping windows automatically
+  re-pixelate the already-pixelated pixels, producing larger apparent block sizes with
+  no extra logic.
+
+  Gesture detection uses wrist-to-tip distance ratios: a finger is "extended" if its
+  tip is farther from landmark 0 (wrist) than its PIP joint by a factor of 0.82.
+  Lock gesture: index extended + middle/ring/pinky not extended. Wipe gesture: 3+
+  non-thumb fingers extended + fingertip x-spread > 7% of canvas width.
+
+CSS layout
+  #app is position:fixed; inset:0 with display:flex centering.
+  #stage is position:relative with the 16:9 size constraint.
+  All UI overlays use position:absolute within #stage.
+  Buttons use backdrop-filter:blur(12px) for glass transparency over the live feed.
+  Header uses a top gradient fade + backdrop-filter:blur(3px).
+  Controls use a bottom gradient fade.
