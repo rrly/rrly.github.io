@@ -761,6 +761,8 @@ nav {
     transition: all 0.18s;
     margin-bottom: -1px;
     white-space: nowrap;
+    flex-shrink: 0;
+    min-width: max-content;
 }
 .proj-tab:hover { color: var(--ink2); background: rgba(255,255,255,0.22); }
 .proj-tab.proj-tab-active {
