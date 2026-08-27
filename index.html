@@ -95,7 +95,7 @@
 
         <div class="hero-tag">
             <div class="hero-tag-pip"></div>
-            <span class="hero-tag-text">·· software engineer</span>
+            <span class="hero-tag-text">·· fullstack software engineer</span>
         </div>
 
         <p class="hero-summary">
@@ -360,7 +360,7 @@
         <div class="contact-rows">
             <a class="c-row c-email-row">
                 <span class="c-icon">@</span>
-                <span class="c-meta"><span class="c-key">email</span><span class="c-val" data-m1="hi" data-m2="ritchie" data-m3="ly"></span></span>
+                <span class="c-meta"><span class="c-key">email</span><span class="c-val" data-m1="rrly89" data-m2="gmail" data-m3="com"></span></span>
             </a>
             <a href="https://www.linkedin.com/in/rrlyrrly/" target="_blank" rel="noopener" class="c-row">
                 <span class="c-icon">in</span>
@@ -523,7 +523,7 @@
             if (el._scram) return;
             const orig = el.dataset.orig || el.textContent.trim();
             el.dataset.orig = orig;
-            el.style.minWidth = el.offsetWidth + 'px';
+            el.style.width = el.offsetWidth + 'px';
             el._scram = true;
             let f = 0, total = 16;
             el._scramId = setInterval(() => {
@@ -534,7 +534,7 @@
                 if (++f > total) {
                     el.textContent = orig;
                     el._scram = false;
-                    el.style.minWidth = '';
+                    el.style.width = '';
                     clearInterval(el._scramId);
                 }
             }, 28);
@@ -542,7 +542,7 @@
         function unscramble(el) {
             clearInterval(el._scramId);
             el._scram = false;
-            el.style.minWidth = '';
+            el.style.width = '';
             if (el.dataset.orig) el.textContent = el.dataset.orig;
         }
         document.querySelectorAll('.nav-btn, .btn-ghost').forEach(el => {
